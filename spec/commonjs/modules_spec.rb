@@ -1,12 +1,13 @@
 # -*- encoding: utf-8 -*-
 require 'spec_helper'
+require 'pry'
 
 describe "modules 1.0" do
 
   def self.make_before(path)
     proc do
       @env = env_with_path_value(path)
-      @env.native('system', QuietSystem.new)
+      @env.attach_rb_functions_to_mod_cache('system', QuietSystem)
     end
   end
 
@@ -18,16 +19,17 @@ describe "modules 1.0" do
       before(&make_before(tests.join(path)))
 
       it "✓" do
-        @env.require('program')
+        #binding.pry  unless ENV['PRY_STOP']
+        @env.runtime.eval(%q|require('program')|)
       end
     end
   end
 
-  class QuietSystem
-    def stdio
+  module QuietSystem
+    def self.stdio
       self
     end
-    def print
+    def self.print
       lambda {|*args|}
     end
   end
@@ -40,7 +42,7 @@ describe "modules" do
     end
     
     it "finds modules in that path" do
-      @env.require('foo').foo.should == 'foo'
+      @env.runtime.eval(%q|require('foo').foo|).should == 'foo'
     end
   end
 end

@@ -1,6 +1,8 @@
-# CommonJS [![Build Status](https://secure.travis-ci.org/cowboyd/commonjs.rb.png)](http://travis-ci.org/cowboyd/commonjs.rb)
+# CommonJS backed by MiniRacer
 
-Host CommonJS JavaScript environments in Ruby
+Host CommonJS JavaScript environments in Ruby via [MiniRacer](https://github.com/discourse/mini_racer)
+
+This gem was ported from [commonjs.rb](https://github.com/cowboyd/commonjs.rb)
 
 ## Why?
 
@@ -8,16 +10,17 @@ The internet is now awash with non-browser JavaScript code. Much of this code co
 simple conventions that let you use it anywhere you have a JavaScript interpreter available. These
 conventions are collectively called "commonjs"
 
-We have several JavaScript interpreters available to us from Ruby. Therefore, why shouldn't we be
-able to use commonjs applications and libraries?
+The MiniRacer interpreter allows us to evaluate JavaScript. Therefore, why shouldn't we be able to
+use commonjs applications and libraries?
 
 ## Using common JS from Ruby.
 
+# TODO
 `CommonJS` now passes all of the Modules 1.0 unit tests.
 
 ```ruby
 env = CommonJS::Environment.new(:path => '/path/to/lib/dir')
-env.require('foo.js')
+env.runtime.eval(%q|var foo = require('foo.js')|)
 ```
 
 ## Future directions
@@ -34,12 +37,4 @@ env.modules :filesystem, :process
 
 ## Supported runtimes
 
-### Current
-
-* The Ruby Racer (V8) - [https://github.com/cowboyd/therubyracer]
-* The Ruby Rhino (JRuby) - [https://github.com/cowboyd/therubyrhino]
-
-### Desired
-
-* Johnson (TraceMonkey) - [https://github.com/jbarnette/johnson]
-* Lyndon (MacRuby) - [https://github.com/defunkt/lyndon]
+Only MiniRacer is supported.
