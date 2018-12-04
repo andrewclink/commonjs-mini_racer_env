@@ -1,13 +1,13 @@
 # -*- encoding: utf-8 -*-
 require 'spec_helper'
-require 'pry'
 
 describe "modules 1.0" do
 
   def self.make_before(path)
     proc do
       @env = env_with_path_value(path)
-      @env.attach_rb_functions_to_mod_cache('system', QuietSystem)
+      sys_exports = @env.attach_rb_functions_to_mod_cache('system', QuietSystem)
+      @env.runtime.eval(%Q|#{sys_exports}.stdio = #{sys_exports}; null|)
     end
   end
 
@@ -19,18 +19,13 @@ describe "modules 1.0" do
       before(&make_before(tests.join(path)))
 
       it "✓" do
-        #binding.pry  unless ENV['PRY_STOP']
         @env.runtime.eval(%q|require('program')|)
       end
     end
   end
 
   module QuietSystem
-    def self.stdio
-      self
-    end
-    def self.print
-      lambda {|*args|}
+    def self.print(*args)
     end
   end
 end

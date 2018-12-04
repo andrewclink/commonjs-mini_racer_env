@@ -15,8 +15,7 @@ use commonjs applications and libraries?
 
 ## Using common JS from Ruby.
 
-# TODO
-`CommonJS` now passes all of the Modules 1.0 unit tests.
+`CommonJS::MiniRacerEnv` passes all of the Modules 1.0 unit tests.
 
 ```ruby
 env = CommonJS::Environment.new(:path => '/path/to/lib/dir')

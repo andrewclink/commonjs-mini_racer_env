@@ -18,4 +18,6 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
+  # TODO: constrain version?
+  gem.add_dependency 'mini_racer'
 end
