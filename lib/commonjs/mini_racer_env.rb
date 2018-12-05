@@ -92,8 +92,8 @@ module CommonJS
           }
         }
 
-        // Install top-level `require` function
-        let require = (() => {
+        // Install top-level `require` function (on global object like Node)
+        this.require = (() => {
           let topMod = new #{JS_MOD}('topMod');  // let this go out of scope
           return topMod.require.bind(topMod);
         })();
