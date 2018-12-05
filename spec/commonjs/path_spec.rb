@@ -7,13 +7,13 @@ describe "load paths: " do
     end
     
     it "finds modules in that path" do
-      @env.runtime.eval(%q|require('one').one|).should eql 'one'
+      expect( @env.runtime.eval(%q|require('one').one|) ).to eql 'one'
     end
 
     it "fails when a module is not in the path" do
-      lambda {
+      expect {
         @env.runtime.eval(%q|require('not_here')|)
-      }.should raise_error(RuntimeError, /no such module 'not_here'/)
+      }.to raise_error(RuntimeError, /no such module 'not_here'/)
     end
   end
   
@@ -23,12 +23,12 @@ describe "load paths: " do
     end
     
     it "finds modules in both paths" do
-      @env.runtime.eval(%q|require('two').two|).should eql 2
-      @env.runtime.eval(%q|require('three').three|).should eql 'three'
+      expect( @env.runtime.eval(%q|require('two').two|) ).to eql 2
+      expect( @env.runtime.eval(%q|require('three').three|) ).to eql 'three'
     end
     
     it "respects the order in which paths were specified" do
-      @env.runtime.eval(%q|require('one').one|).to_i.should eql 1
+      expect( @env.runtime.eval(%q|require('one').one|).to_i ).to eql 1
     end
   end  
 end

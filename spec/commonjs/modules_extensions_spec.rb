@@ -6,6 +6,6 @@ describe 'modules extensions' do
   end
 
   it "allows the exports object to be completely replaced" do
-    @env.runtime.eval(%q|require('assign_module_exports')()|).should eql "I am your exports"
+    expect( @env.runtime.eval(%q|require('assign_module_exports')()|) ).to eql "I am your exports"
   end
 end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'mini_racer'
+require_relative "mini_racer_env/version"
 
 module CommonJS
   class MiniRacerEnv
@@ -11,10 +12,13 @@ module CommonJS
     attr_reader :runtime
 
     # Do not reuse runtime_ in other Environment instances or variables may be overwritten.
-    # `options[:path]` - JS load path. For best results, use an absolute path.
-    def initialize(runtime_, options = {})
+    # `:path` - JS load path. For best results, use an absolute path.
+    def initialize(runtime_, path:)
+      unless runtime_.is_a?(MiniRacer::Context)
+        raise TypeError, "Expected a MiniRacer::Context, got #{runtime_.class}"
+      end
       @runtime = runtime_
-      @paths = [options[:path]].flatten.map {|path| File.expand_path(path) }
+      @paths = [path].flatten.map {|pth| File.expand_path(pth) }
       setup(@runtime, @paths)
     end
 
@@ -61,8 +65,7 @@ module CommonJS
       # Use to_json to escape the value
       ctx.eval("__commonjs__.loadPaths = #{load_paths.to_json}")
 
-      # inspired by the original commonjs gem.
-      # TODO: use IIFE to pass in JS_MOD so we don't need to interpolate so much
+      # inspired by the original commonjs.rb gem.
       ctx.eval( <<~JSMOD, filename: "#{__FILE__}/#{__method__}" )
         class #{JS_MOD} {
           constructor(id) {
@@ -72,15 +75,17 @@ module CommonJS
           }
           get id() { return this._id; }
           require(modId) {
-            // Do not use `modId` after this line; use `expandedId`
-            let expandedId = #{JS_MOD}._expandModId(this._segments, modId);
+            let klass = this.constructor;
 
-            let mod = #{JS_MOD}._cache[expandedId];
+            // Do not use `modId` after this line; use `expandedId`
+            let expandedId = klass._expandModId(this._segments, modId);
+
+            let mod = klass._cache[expandedId];
             if (!mod) {
-              let foundPath = #{JS_MOD}._find(__commonjs__.loadPaths, expandedId);
-              let loader = (module, require, exports) => { eval(#{JS_MOD}._loadSource(foundPath)); };
+              let foundPath = klass._find(__commonjs__.loadPaths, expandedId);
+              let loader = (module, require, exports) => { eval(klass._loadSource(foundPath)); };
               // must be cached before loading, in case there are circular deps
-              #{JS_MOD}._cache[expandedId] = mod = new #{JS_MOD}(expandedId);
+              klass._cache[expandedId] = mod = new klass(expandedId);
               loader(mod, mod.require.bind(mod), mod.exports);
             }
             return mod.exports;
@@ -88,7 +93,7 @@ module CommonJS
         }
 
         // Install top-level `require` function
-        var require = (() => {
+        let require = (() => {
           let topMod = new #{JS_MOD}('topMod');  // let this go out of scope
           return topMod.require.bind(topMod);
         })();
@@ -104,14 +109,17 @@ module CommonJS
         if found_file_path
           found_file_path
         else
+          # Must `raise` here to halt the load process
           raise "no such module '#{module_id}'"
         end
       })
+
       ctx.attach("#{JS_MOD}._loadSource", proc {|path|
         # For better error messages, we include the magic V8 sourceURL comment.
         # See https://bugs.chromium.org/p/v8/issues/detail?id=2948
         File.read(path) + "\n//# sourceURL=#{path}"
       })
+
       ctx.attach("#{JS_MOD}._expandModId", proc {|segments, module_id|
         mod_segs = module_id.split('/')
         if mod_segs.any? {|seg| seg == '.' || seg == '..' }

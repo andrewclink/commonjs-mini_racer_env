@@ -1,6 +1,7 @@
 (The MIT License: http://www.opensource.org/licenses/MIT)
 
-Copyright (c) 2011,2012 Charles Lowell
+Copyright (c) 2011,2012 Charles Lowell (original commonjs.rb)
+Copyright (c) 2018 Tribune Publishing (MiniRacerEnv rewrite)
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files

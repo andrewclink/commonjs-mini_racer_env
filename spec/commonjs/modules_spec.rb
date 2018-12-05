@@ -37,7 +37,7 @@ describe "modules" do
     end
     
     it "finds modules in that path" do
-      @env.runtime.eval(%q|require('foo').foo|).should == 'foo'
+      expect( @env.runtime.eval(%q|require('foo').foo|) ).to eql 'foo'
     end
   end
 end

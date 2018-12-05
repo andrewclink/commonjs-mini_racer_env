@@ -18,7 +18,7 @@ use commonjs applications and libraries?
 `CommonJS::MiniRacerEnv` passes all of the Modules 1.0 unit tests.
 
 ```ruby
-env = CommonJS::Environment.new(:path => '/path/to/lib/dir')
+env = CommonJS::MiniRacerEnv.new(mini_racer_context, path: '/path/to/lib/dir')
 env.runtime.eval(%q|var foo = require('foo.js')|)
 ```
 
