@@ -16,6 +16,15 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = CommonJS::MiniRacerEnv::VERSION
 
+  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
+  # to allow pushing to a single host or delete this section to allow pushing to any host.
+  if gem.respond_to?(:metadata)
+    gem.metadata["allowed_push_host"] = "PUSH_DISABLED"
+  else
+    raise "RubyGems 2.0 or newer is required to protect against " \
+      "public gem pushes."
+  end
+
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
   gem.add_dependency 'mini_racer', '>= 0.2.4'
