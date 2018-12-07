@@ -15,6 +15,10 @@ describe "load paths: " do
         @env.runtime.eval(%q|require('not_here')|)
       }.to raise_error(RuntimeError, /no such module 'not_here'/)
     end
+
+    it "works with a module name containing hyphens" do
+      expect( @env.runtime.eval(%q|require('i-am-special').name|) ).to eql 'I am special'
+    end
   end
   
   describe "with multiple paths" do

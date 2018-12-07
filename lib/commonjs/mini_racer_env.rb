@@ -52,7 +52,8 @@ module CommonJS
     # Returns the fully qualified (dotted) name to the `exports` object of the new module.
     # SECURITY NOTE: Do not pass untrusted input for `js_mod_name`
     def define_cached_module(js_mod_name)
-      mod_qname = "#{JS_MOD}._cache.#{js_mod_name}"
+      # use bracket-syntax to handle non-identifier chars, e.g. 'source-map'
+      mod_qname = "#{JS_MOD}._cache[#{js_mod_name.inspect}]"
       @runtime.eval(%Q|#{mod_qname} = new #{JS_MOD}("#{js_mod_name}")|)
       "#{mod_qname}.exports"
     end
