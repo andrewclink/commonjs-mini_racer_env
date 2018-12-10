@@ -48,7 +48,6 @@ describe "attaching ruby module functions" do
       expect(exports_qname).to eq "Module._cache[\"#{mod_name}\"].exports"
       expect( runtime.eval(%Q|require("#{mod_name}").plusTwo(100)|) ).to eql 102
       expect( runtime.eval(%Q|require("#{mod_name}").timesTwo(101)|) ).to eql 202
-      skip
     end
   end
 end
