@@ -1,0 +1,3 @@
+module.exports = {
+	thing: 'works'
+}

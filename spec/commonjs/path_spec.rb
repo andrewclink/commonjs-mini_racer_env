@@ -6,6 +6,10 @@ describe "load paths: " do
       @env = env_with_path_value File.expand_path('../libjs', __FILE__)
     end
     
+    it "finds modules with index.js" do
+      expect( @env.runtime.eval(%q|require('thing').thing|)).to eql 'works'
+    end
+    
     it "finds modules in that path" do
       expect( @env.runtime.eval(%q|require('one').one|) ).to eql 'one'
     end

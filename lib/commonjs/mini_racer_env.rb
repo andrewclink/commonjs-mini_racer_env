@@ -4,6 +4,12 @@ require 'mini_racer'
 require_relative "mini_racer_env/version"
 
 module CommonJS
+  class Console
+    def log(*args)
+      puts "console: #{args.inspect}"
+    end
+  end
+  
   class MiniRacerEnv
     # Name of the top-level JS module class. This currently doesn't support a nested (dotted) name.
     # Do not hardcode this name anywhere else.
@@ -61,6 +67,16 @@ module CommonJS
     private
 
     def setup(ctx, load_paths)
+      ctx.attach 'console.log', proc {|*args| 
+        args.each do |arg|
+          case arg
+          when String then print arg
+          when MiniRacer::JavaScriptFunction 
+            print "[function #{arg.to_s}]"
+          end
+        end
+      }
+      
       ctx.eval('__commonjs__ = {}')
 
       # Use to_json to escape the value
@@ -104,9 +120,39 @@ module CommonJS
 
       ctx.attach("#{JS_MOD}._find", proc {|load_paths, module_id|
         # Add `.js` extension if neccessary.
-        target = File.extname(module_id) == '.js'  ?  module_id  :  "#{module_id}.js"
-        found_file_path = load_paths.map {|path| File.join(path, target) }.
-                                     detect {|filepath| File.exist?(filepath) }
+        
+        
+        # target = File.extname(module_id) == '.js'  ?  module_id  :  "#{module_id}.js"
+        # found_file_path = load_paths.map {|path| x = File.join(path, target); puts "Searching path: #{path}, target: #{target} => #{x}"; x }.
+        #                              detect {|filepath| File.exist?(filepath) }
+
+        found_file_path = nil
+        load_paths.each do |path|
+          puts "Searching path: #{path} for #{module_id}"
+          # Look for the file
+          tmp = File.join(path, module_id)
+          puts "Trying: #{tmp}"
+          if File.exists?(tmp)
+            if File.directory?(tmp) 
+              tmp = File.join(path, module_id, "index.js")
+              puts "Trying: #{tmp}"
+              found_file_path = tmp and break if File.exists?(tmp)
+            else
+              found_file_path = tmp
+            end
+          end
+          
+          
+          # Look for file.js
+          tmp = File.join(path, "#{module_id}.js")
+          puts "Trying: #{tmp}"
+          found_file_path = tmp and break if File.exists?(tmp)
+          
+
+        end
+
+
+
         if found_file_path
           found_file_path
         else
