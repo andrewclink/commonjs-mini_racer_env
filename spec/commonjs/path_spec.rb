@@ -10,6 +10,10 @@ describe "load paths: " do
       expect( @env.runtime.eval(%q|require('thing').thing|)).to eql 'works'
     end
     
+    it "resolves relative paths" do
+      expect( @env.runtime.eval(%q|require('thing/target')|)).to eql 'thing/sibling'
+    end
+    
     it "finds modules in that path" do
       expect( @env.runtime.eval(%q|require('one').one|) ).to eql 'one'
     end
@@ -36,7 +40,9 @@ describe "load paths: " do
     end
     
     it "respects the order in which paths were specified" do
-      expect( @env.runtime.eval(%q|require('one').one|).to_i ).to eql 1
+      result = @env.runtime.eval(%q|require('one').one|)
+      puts "got result #{result.inspect}"
+      expect( result.to_i ).to eql 1
     end
   end  
 end

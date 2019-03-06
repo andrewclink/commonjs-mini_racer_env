@@ -28,4 +28,13 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
   gem.add_dependency 'mini_racer', '>= 0.2.4'
+
+  gem.add_dependency 'byebug'
+  gem.add_dependency 'pry'
+  gem.add_dependency 'pry-rescue'
+  gem.add_dependency 'pry-stack_explorer'
+  gem.add_dependency 'pry-byebug'
+  
+  
+
 end
